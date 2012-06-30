@@ -1,0 +1,7 @@
+do the pref page
+
+	speed (use num stepper or drag bar), which sets avg node speed
+	color random interv
+
+
+publish

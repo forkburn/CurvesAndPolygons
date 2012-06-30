@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
+   android:thumbnail="@drawable/ic_thumbnail"
+   android:settingsActivity="com.warfactory.curvesandpolygons.activities.WallpaperPreferencesActivity"
+    
+   android:description="@string/wallpaper_desc"/>
+

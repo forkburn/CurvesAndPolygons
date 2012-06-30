@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="wallpaper_setting"></string>
+	<string name="app_name">Curves and Polygons</string>
+	<string name="wallpaper_name">Curves and Polygons</string>
+	<string name="wallpaper_desc">Inspired by screen savers from the old times</string>
+	<string name="pref_loop_type_key">pref_loop_type_key</string>
+	<string name="pref_render_mode_key">pref_render_mode_key</string>
+	<string name="pref_num_loop_key">pref_num_loop_key</string>
+	<string name="pref_num_node_key">pref_num_node_key</string>
+	<string name="pref_bg_color_key">pref_bg_color_key</string>
+
+	<!-- for the num picker component -->
+	<string name="dialog_set_number">Set</string>
+	<string name="dialog_cancel">Cancel</string>
+	<string name="dialog_picker_title">Choose a number</string>
+
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:scr="http://schemas.android.com/apk/res/com.warfactory.curvesandpolygons"
+	>
+
+	<ListPreference android:key="@string/pref_loop_type_key"
+		android:title="Shape" 
+		android:summary="Shape of the loops"
+		android:entries="@array/pref_loop_type_text"
+		android:entryValues="@array/pref_loop_type_value" android:persistent="true" />
+
+
+	<ListPreference android:key="@string/pref_render_mode_key"
+		android:title="Rendering mode" 
+		android:entries="@array/pref_render_mode_text"
+		android:entryValues="@array/pref_render_mode_value"
+		android:persistent="true" />
+
+	<com.quietlycoding.android.picker.NumberPickerPreference
+		android:key="@string/pref_num_loop_key"
+		android:title="Number of loops"
+		scr:defaultValue="10"
+		scr:startRange="1" 
+		scr:endRange="50"
+		/> 
+		
+		
+	<com.quietlycoding.android.picker.NumberPickerPreference
+		scr:defaultValue="5" 
+		scr:startRange="3"
+		scr:endRange="10" 
+		android:summary="Number of segments in a loop" 
+		android:title="Number of segments" 
+		android:key="@string/pref_num_node_key"/>
+		
+	<com.att.preference.colorpicker.ColorPickerPreference 
+		android:defaultValue="@integer/COLOR_BLACK" android:title="Background color" android:key="@string/pref_bg_color_key"/> 
+</PreferenceScreen>
