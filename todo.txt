@@ -1,4 +1,4 @@
-do the pref page,use new theme
+do the pref page, use new theme
 allow settting moving speed/stop
 prefence init value shoud reflect current value in model
 
