@@ -1,0 +1,2 @@
+include ':colorPickerPreference'
+include ':curvesAndPolygons'

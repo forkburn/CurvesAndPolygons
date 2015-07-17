@@ -1,7 +1,4 @@
-do the pref page
+do the pref page,use new theme
+allow settting moving speed/stop
+prefence init value shoud reflect current value in model
 
-	speed (use num stepper or drag bar), which sets avg node speed
-	color random interv
-
-
-publish
