@@ -31,11 +31,8 @@ public class ScrRunnable implements Runnable {
                     synchronized (mHolder) {
                         mScr.calc();
                         mScr.draw(canvas);
-//						Thread.sleep(mScr.getScreenUpdateInterval());
                     }
                 }
-//			}catch(InterruptedException exception){
-//				return;
             } finally {
                 if (canvas != null) {
                     mHolder.unlockCanvasAndPost(canvas);
