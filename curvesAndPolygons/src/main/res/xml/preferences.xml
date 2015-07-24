@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res/com.warfactory.curvesandpolygons">
+    xmlns:custom="http://schemas.android.com/apk/res-auto/com.warfactory.numberpickerpreference">
 
     <ListPreference
         android:key="@string/pref_loop_type_key"
@@ -8,17 +8,17 @@
         android:summary="Shape of the loops"
         android:entries="@array/pref_loop_type_text"
         android:entryValues="@array/pref_loop_type_value"
-        android:persistent="true" />
+        android:defaultValue="@string/shape_curve" />
 
 
-    <com.warfactory.curvesandpolygons.NumberPickerPreference
+    <com.warfactory.numberpickerpreference.NumberPickerPreference
         android:key="@string/pref_num_loop_key"
         android:title="Number of loops"
         custom:minValue="1"
-        custom:maxValue="12" />
+        custom:maxValue="20" />
 
 
-    <com.warfactory.curvesandpolygons.NumberPickerPreference
+    <com.warfactory.numberpickerpreference.NumberPickerPreference
         android:summary="Number of segments in a loop"
         android:title="Number of segments"
         android:key="@string/pref_num_node_key"

@@ -20,4 +20,5 @@ android {
 
 dependencies {
     compile project(':colorPickerPreference')
+    compile project(':NumberPickerPreference')
 }

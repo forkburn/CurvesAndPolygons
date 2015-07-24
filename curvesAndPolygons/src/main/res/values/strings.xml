@@ -10,9 +10,7 @@
 	<string name="pref_num_node_key">pref_num_node_key</string>
 	<string name="pref_bg_color_key">pref_bg_color_key</string>
 
-	<!-- for the num picker component -->
-	<string name="dialog_set_number">Set</string>
-	<string name="dialog_cancel">Cancel</string>
-	<string name="dialog_picker_title">Choose a number</string>
+	<string name="shape_curve">CURVE</string>
+	<string name="shape_polygon">POLYGON</string>
 
 </resources>

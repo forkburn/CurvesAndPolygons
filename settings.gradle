@@ -1,2 +1,3 @@
 include ':colorPickerPreference'
 include ':curvesAndPolygons'
+include ':NumberPickerPreference'

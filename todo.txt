@@ -1,4 +1,3 @@
-do the pref page, use new theme
-allow settting moving speed/stop
-prefence init value shoud reflect current value in model
+allow setting moving speed/step
+add a main activity?
 

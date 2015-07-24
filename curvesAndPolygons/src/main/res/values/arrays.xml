@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string-array name="pref_render_mode_text">
-		<item>Solid color</item>
-		<item>Stroke only</item>
-	</string-array>
-	
-	<string-array name="pref_render_mode_value">
-		<item>SOLID_COLOR</item>
-		<item>STROKE_ONLY</item>
-	</string-array>
-
 	<string-array name="pref_loop_type_text">
 		<item>Curve</item>
 		<item>Polygon</item>
 	</string-array>
 	
 	<string-array name="pref_loop_type_value">
-		<item>CURVE</item>
-		<item>POLYGON</item>
+		<item>@string/shape_curve</item>
+		<item>@string/shape_polygon</item>
 	</string-array>
 
 </resources>
