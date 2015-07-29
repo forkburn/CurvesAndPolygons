@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
+import android.util.Log;
 
 public class MovingLoopsRenderer {
 
@@ -18,6 +19,24 @@ public class MovingLoopsRenderer {
     protected ArrayList<Loop> loops = new ArrayList<Loop>();
     // a pointer to the current loop which we'll process in next frame
     protected int currentLoopIdx;
+
+    // target fps is 30. so need to update graphics every 33 ms.
+    private long frameUpdateInterval = 33;
+
+    public void updateFrame(Canvas canvas) {
+        long frameStart = System.currentTimeMillis();
+        updateFramePhysics();
+        drawFrame(canvas);
+        long frameEnd = System.currentTimeMillis();
+        long timeTillNextFrame = frameEnd - frameStart - frameUpdateInterval;
+        if (timeTillNextFrame > 0 ) {
+            try {
+                Thread.sleep(timeTillNextFrame);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
 
     // the invisible moving nodes on the screen, which decides where the loop go
@@ -96,7 +115,7 @@ public class MovingLoopsRenderer {
     /**
      * To be called in each frame
      */
-    public synchronized void updatePhysics() {
+    private synchronized void updateFramePhysics() {
         // move the nodes. handle bouncing on bounding box
         moveNodes();
 
@@ -147,9 +166,9 @@ public class MovingLoopsRenderer {
      *
      * @param canvas
      */
-    public synchronized void draw(Canvas canvas) {
+    private synchronized void drawFrame(Canvas canvas) {
         canvas.drawColor(getBgColor());
-        // draw all loops
+        // drawFrame all loops
         drawAllLoops(canvas);
     }
 
@@ -209,13 +228,13 @@ public class MovingLoopsRenderer {
      * @param canvas
      */
     protected void drawAllLoops(Canvas canvas) {
-        // draw the loops after currentLoopIdx first
+        // drawFrame the loops after currentLoopIdx first
         int i = currentLoopIdx + 1;
         while (i < loops.size()) {
             loops.get(i).draw(canvas, paint);
             i++;
         }
-        // draw the loops before currentLoopIdx
+        // drawFrame the loops before currentLoopIdx
         i = 0;
         while (i <= currentLoopIdx) {
             loops.get(i).draw(canvas, paint);

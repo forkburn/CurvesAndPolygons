@@ -11,14 +11,14 @@ public class ScrRunnable implements Runnable {
 
 
     private SurfaceHolder mHolder;
-    private MovingLoopsRenderer mScr;
+    private MovingLoopsRenderer mRenderer;
 
     // flag indicating whether thread should continue to run
     private boolean stopFlag = false;
 
     public ScrRunnable(SurfaceHolder holder, MovingLoopsRenderer mScr) {
         mHolder = holder;
-        this.mScr = mScr;
+        this.mRenderer = mScr;
     }
 
     @Override
@@ -29,8 +29,7 @@ public class ScrRunnable implements Runnable {
                 canvas = mHolder.lockCanvas();
                 if (canvas != null) {
                     synchronized (mHolder) {
-                        mScr.updatePhysics();
-                        mScr.draw(canvas);
+                        mRenderer.updateFrame(canvas);
                     }
                 }
             } finally {
