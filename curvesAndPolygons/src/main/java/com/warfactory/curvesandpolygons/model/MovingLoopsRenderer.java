@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class MovingLoopsRenderer {
 
-    public static final int DEFAULT_FRAME_INTERVAL = 30;
+    public static final int DEFAULT_FRAME_INTERVAL = 20;
     // series of loops moving on the screen
     protected ArrayList<Loop> loops = new ArrayList<Loop>();
     // a pointer to the current loop which we'll process in next frame
@@ -103,7 +103,7 @@ public class MovingLoopsRenderer {
 
         path.setFillType(Path.FillType.WINDING);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setAntiAlias(true);
+        paint.setAntiAlias(false);
         targetColor = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
     }
 
