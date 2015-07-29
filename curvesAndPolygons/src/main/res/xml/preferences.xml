@@ -15,7 +15,7 @@
         android:key="@string/pref_num_loop_key"
         android:title="Number of loops"
         custom:minValue="1"
-        custom:maxValue="20" />
+        custom:maxValue="50" />
 
 
     <com.warfactory.numberpickerpreference.NumberPickerPreference
@@ -23,7 +23,7 @@
         android:title="Number of segments"
         android:key="@string/pref_num_node_key"
         custom:minValue="1"
-        custom:maxValue="7" />
+        custom:maxValue="8" />
 
 
     <net.margaritov.preference.colorpicker.ColorPickerPreference
