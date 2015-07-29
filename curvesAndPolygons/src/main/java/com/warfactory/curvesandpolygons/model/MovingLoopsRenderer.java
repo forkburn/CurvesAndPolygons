@@ -15,20 +15,21 @@ import android.util.Log;
 
 public class MovingLoopsRenderer {
 
+    public static final int DEFAULT_FRAME_INTERVAL = 33;
     // series of loops moving on the screen
     protected ArrayList<Loop> loops = new ArrayList<Loop>();
     // a pointer to the current loop which we'll process in next frame
     protected int currentLoopIdx;
 
-    // target fps is 30. so need to update graphics every 33 ms.
-    private long frameUpdateInterval = 33;
+    // milliseconds between frames
+    private long frameUpdateInterval = DEFAULT_FRAME_INTERVAL;
 
     public void updateFrame(Canvas canvas) {
         long frameStart = System.currentTimeMillis();
         updateFramePhysics();
         drawFrame(canvas);
         long frameEnd = System.currentTimeMillis();
-        long timeTillNextFrame = frameEnd - frameStart - frameUpdateInterval;
+        long timeTillNextFrame = frameStart + frameUpdateInterval - frameEnd;
         if (timeTillNextFrame > 0 ) {
             try {
                 Thread.sleep(timeTillNextFrame);
