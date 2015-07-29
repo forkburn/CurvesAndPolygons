@@ -29,7 +29,7 @@ public class ScrRunnable implements Runnable {
                 canvas = mHolder.lockCanvas();
                 if (canvas != null) {
                     synchronized (mHolder) {
-                        mScr.calc();
+                        mScr.updatePhysics();
                         mScr.draw(canvas);
                     }
                 }

@@ -14,246 +14,258 @@ import android.graphics.Path;
 
 public class MovingLoopsRenderer {
 
-	
-	protected ArrayList<Loop> loops = new ArrayList<Loop>();
-	// a pointer to the current loop we are drawing on
-	protected int currentLoop;
+    // series of loops moving on the screen
+    protected ArrayList<Loop> loops = new ArrayList<Loop>();
+    // a pointer to the current loop which we'll process in next frame
+    protected int currentLoopIdx;
 
 
-	// the invisible moving nodes on the screen
-	protected class MovingNode{
-		public Point2d pos = new Point2d();
-		public Vector2d vel = new Vector2d();
-	}
-	protected ArrayList<MovingNode> movingNodes = new ArrayList<MovingLoopsRenderer.MovingNode>();
+    // the invisible moving nodes on the screen, which decides where the loop go
+    protected class MovingNode {
+        public Point2d pos = new Point2d();
+        public Vector2d vel = new Vector2d();
+    }
 
-	private int bgColor = Color.BLACK;
-	protected Paint paint = new Paint();
-	protected Path path = new Path();
-	
-	// the screen dimension in pixel
-	protected int width;
-	protected int height;
+    protected ArrayList<MovingNode> movingNodes = new ArrayList<MovingLoopsRenderer.MovingNode>();
 
-	// speed of the moving nodes
-	protected int speedAverage = 10;
-	protected int speedVariance = 5;
-	
-	// used for the color transformation
-	// after how many frames do we change the *target* color
-	private static final int RANDOM_COLOR_FRAME_INTERVAL = 100;
-	private int randomColorFrameCounter;
-	// the "target" color, towards which our currentColor will gradually transform over the RANDOM_COLOR_FRAME_INTERVAL
-	private int targetColor;
-	private Random random = new Random();
-	private int currentColor = Color.WHITE;
-	
-	public enum RenderMode {SOLID_COLOR, STROKE_ONLY};
-	private RenderMode currentRenderMode = RenderMode.STROKE_ONLY;
-	
-	public enum LoopType {CURVE, POLYGON};
-	
-	public MovingLoopsRenderer(int numLoops, int numPoints, int width, int height, LoopType loopType){
-		this.setWidth(width);
-		this.setHeight(height);
-		// generate the loops and put points in them
-		for (int i=0; i<numLoops; i++){
-			if (loopType == LoopType.POLYGON){
-				loops.add(new PolygonLoop(numPoints));
-			}else{
-				loops.add(new CurveLoop(numPoints));
-			}
-		}
+    private int bgColor = Color.BLACK;
+    protected Paint paint = new Paint();
+    protected Path path = new Path();
 
-		// generate the nodes
-		for (int i=0; i<numPoints; i++){
-			MovingNode newNode = new MovingNode();
-			// randomize the nodes
-			newNode.pos = new Point2d(Math.random()*width, Math.random()*height);
-			double speed = getRandomSpeed();
-			double angle = Math.random() * 2 * Math.PI;
-			newNode.vel = new Vector2d(speed*Math.cos(angle), speed*Math.sin(angle));
-			movingNodes.add(newNode);
-		}
+    // the screen dimension in pixel
+    protected int width;
+    protected int height;
 
-		path.setFillType(Path.FillType.WINDING);
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setAntiAlias(true);
-		targetColor = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-	}
+    // speed of the moving nodes
+    protected int speedAverage = 10;
+    protected int speedVariance = 5;
 
+    // used for the color transformation
+    // after how many frames do we change the *target* color
+    private static final int COLOR_CHANGE_INTERVAL = 100;
+    private int colorChangeTimer;
+    // the "target" color, towards which our currentColor will gradually transform over the COLOR_CHANGE_INTERVAL
+    private int targetColor;
+    private Random random = new Random();
+    private int currentColor = Color.WHITE;
 
-	private double getRandomSpeed() {
-		return speedAverage + (Math.random() * 2 * speedVariance) - speedVariance;
-	}
+    public enum RenderMode {SOLID_COLOR, STROKE_ONLY}
 
+    ;
+    private RenderMode currentRenderMode = RenderMode.STROKE_ONLY;
 
-	/**
-	 * To be called in each frame
-	 */
-	public synchronized void calc(){
-		// move the nodes. handle bounding box
-		moveNodes();
+    public enum LoopType {CURVE, POLYGON}
 
-		// advance the current Loop 
-		advanceCurrentLoop();
+    ;
 
-		// position the current loop according to the pos of the nodes
-		updateCurrentLoopPos();
+    public MovingLoopsRenderer(int numLoops, int numPoints, int width, int height, LoopType loopType) {
+        this.setWidth(width);
+        this.setHeight(height);
+        // generate the loops and put points in them
+        for (int i = 0; i < numLoops; i++) {
+            if (loopType == LoopType.POLYGON) {
+                loops.add(new PolygonLoop(numPoints));
+            } else {
+                loops.add(new CurveLoop(numPoints));
+            }
+        }
 
-		// on a certain interval, set the target color to a random one
-		randomColorFrameCounter ++;
-		if (randomColorFrameCounter > RANDOM_COLOR_FRAME_INTERVAL){
-			randomColorFrameCounter = 0;
-			updateTargetTransformColor();
-		}
-		
-		transformCurrentColor();
-		
-		// calculate color for the current loop
-		updateCurrentLoopColor();
+        // generate the nodes
+        for (int i = 0; i < numPoints; i++) {
+            MovingNode newNode = new MovingNode();
+            // randomize the nodes
+            newNode.pos = new Point2d(Math.random() * width, Math.random() * height);
+            double speed = getRandomSpeed();
+            double angle = Math.random() * 2 * Math.PI;
+            newNode.vel = new Vector2d(speed * Math.cos(angle), speed * Math.sin(angle));
+            movingNodes.add(newNode);
+        }
 
-	}
+        path.setFillType(Path.FillType.WINDING);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setAntiAlias(true);
+        targetColor = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+    }
 
 
-	/**
-	 * transform the current color towards the "target" color
-	 */
-	private void transformCurrentColor() {
-		int r = Color.red(currentColor) + (Color.red(targetColor) - Color.red(currentColor)) / RANDOM_COLOR_FRAME_INTERVAL;
-		int g = Color.green(currentColor) + (Color.green(targetColor) - Color.green(currentColor)) / RANDOM_COLOR_FRAME_INTERVAL;
-		int b = Color.blue(currentColor) + (Color.blue(targetColor) - Color.blue(currentColor)) / RANDOM_COLOR_FRAME_INTERVAL;
-		currentColor = Color.rgb(r, g, b);
-	}
-	
-	private void updateTargetTransformColor() {
-		// set the target color of the color transform to a random color
-		targetColor = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-	}
+    private double getRandomSpeed() {
+        return speedAverage + (Math.random() * 2 * speedVariance) - speedVariance;
+    }
 
 
-	/**
-	 * Render everything onto a canvas
-	 * @param canvas
-	 */
-	public synchronized void draw(Canvas canvas){
-		canvas.drawColor(getBgColor());
-		// draw all loops
-		drawAllLoops(canvas);
-	}
+    /**
+     * To be called in each frame
+     */
+    public synchronized void updatePhysics() {
+        // move the nodes. handle bouncing on bounding box
+        moveNodes();
 
-	protected void moveNodes(){
-		for (int i=0; i<movingNodes.size(); i++){
-			movingNodes.get(i).pos.add(movingNodes.get(i).vel);
-			// if the node is moving out of the valid area
-			if (movingNodes.get(i).pos.x > getWidth()){
-				movingNodes.get(i).pos.x = getWidth();
-				movingNodes.get(i).vel.x *= -1;
-				movingNodes.get(i).vel.normalize();
-				movingNodes.get(i).vel.scale(getRandomSpeed());
-				
-			}else if (movingNodes.get(i).pos.x < 0){
-				movingNodes.get(i).pos.x = 0;
-				movingNodes.get(i).vel.x *= -1;
-				movingNodes.get(i).vel.normalize();
-				movingNodes.get(i).vel.scale(getRandomSpeed());
-			}
+        // update the pointer to the current Loop
+        updateCurrentLoop();
 
-			if (movingNodes.get(i).pos.y > getHeight()){
-				movingNodes.get(i).pos.y = getHeight();
-				movingNodes.get(i).vel.y *= -1;
-				movingNodes.get(i).vel.normalize();
-				movingNodes.get(i).vel.scale(getRandomSpeed());
-			}else if (movingNodes.get(i).pos.y < 0){
-				movingNodes.get(i).pos.y = 0;
-				movingNodes.get(i).vel.y *= -1;
-				movingNodes.get(i).vel.normalize();
-				movingNodes.get(i).vel.scale(getRandomSpeed());
-			}
-		}
-	}
+        // position the current loop according to the pos of the nodes
+        updateCurrentLoopPos();
 
-	protected void advanceCurrentLoop(){
-		currentLoop++;
-		if (currentLoop>loops.size()-1){
-			currentLoop=0;
-		}
-	}
+        // on a certain interval, set the target color to a random one
+        updateTargetColor();
 
-	protected void updateCurrentLoopPos() {
-		// set the current loop's points to the nodes point positions
-		for (int i=0; i<movingNodes.size(); i++){
-			loops.get(currentLoop).getPoints().get(i).set(movingNodes.get(i).pos);
-		}
-	}
+        // base on the target color, set color for this frame
+        transformCurrentColor();
 
-	protected void updateCurrentLoopColor() {
-		loops.get(currentLoop).setColor(currentColor); 
-	}
+        // paint the current loop
+        updateCurrentLoopColor();
 
-	/**
-	 * Draw all the loops, with the least recent loop at the bottom f the canvas, and the 
-	 * currentLoop at the top
-	 * @param canvas
-	 */
-	protected  void drawAllLoops(Canvas canvas) {
-		// draw the loops after currentLoop first
-		int i = currentLoop + 1;
-		while (i<loops.size()){
-			loops.get(i).draw(canvas, paint);
-			i++;
-		}
-		// draw the loops before currentLoop
-		i=0;
-		while (i<=currentLoop){
-			loops.get(i).draw(canvas, paint);
-			i++;
-		}
-	}
-	
-	public int getWidth() {
-		return width;
-	}
+    }
+
+    private void updateTargetColor() {
+        colorChangeTimer++;
+        if (colorChangeTimer > COLOR_CHANGE_INTERVAL) {
+            colorChangeTimer = 0;
+            updateTargetTransformColor();
+        }
+    }
 
 
-	public void setWidth(int width) {
-		this.width = width;
-	}
+    /**
+     * transform the current color towards the "target" color
+     */
+    private void transformCurrentColor() {
+        int r = Color.red(currentColor) + (Color.red(targetColor) - Color.red(currentColor)) / COLOR_CHANGE_INTERVAL;
+        int g = Color.green(currentColor) + (Color.green(targetColor) - Color.green(currentColor)) / COLOR_CHANGE_INTERVAL;
+        int b = Color.blue(currentColor) + (Color.blue(targetColor) - Color.blue(currentColor)) / COLOR_CHANGE_INTERVAL;
+        currentColor = Color.rgb(r, g, b);
+    }
+
+    private void updateTargetTransformColor() {
+        // set the target color of the color transform to a random color
+        targetColor = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+    }
 
 
-	public int getHeight() {
-		return height;
-	}
+    /**
+     * Render everything onto a canvas
+     *
+     * @param canvas
+     */
+    public synchronized void draw(Canvas canvas) {
+        canvas.drawColor(getBgColor());
+        // draw all loops
+        drawAllLoops(canvas);
+    }
+
+    protected void moveNodes() {
+        for (int i = 0; i < movingNodes.size(); i++) {
+            movingNodes.get(i).pos.add(movingNodes.get(i).vel);
+            // if the node is moving out of the valid area
+            if (movingNodes.get(i).pos.x > getWidth()) {
+                movingNodes.get(i).pos.x = getWidth();
+                movingNodes.get(i).vel.x *= -1;
+                movingNodes.get(i).vel.normalize();
+                movingNodes.get(i).vel.scale(getRandomSpeed());
+
+            } else if (movingNodes.get(i).pos.x < 0) {
+                movingNodes.get(i).pos.x = 0;
+                movingNodes.get(i).vel.x *= -1;
+                movingNodes.get(i).vel.normalize();
+                movingNodes.get(i).vel.scale(getRandomSpeed());
+            }
+
+            if (movingNodes.get(i).pos.y > getHeight()) {
+                movingNodes.get(i).pos.y = getHeight();
+                movingNodes.get(i).vel.y *= -1;
+                movingNodes.get(i).vel.normalize();
+                movingNodes.get(i).vel.scale(getRandomSpeed());
+            } else if (movingNodes.get(i).pos.y < 0) {
+                movingNodes.get(i).pos.y = 0;
+                movingNodes.get(i).vel.y *= -1;
+                movingNodes.get(i).vel.normalize();
+                movingNodes.get(i).vel.scale(getRandomSpeed());
+            }
+        }
+    }
+
+    protected void updateCurrentLoop() {
+        currentLoopIdx++;
+        if (currentLoopIdx > loops.size() - 1) {
+            currentLoopIdx = 0;
+        }
+    }
+
+    protected void updateCurrentLoopPos() {
+        // set the current loop's points to the nodes point positions
+        for (int i = 0; i < movingNodes.size(); i++) {
+            loops.get(currentLoopIdx).getPoints().get(i).set(movingNodes.get(i).pos);
+        }
+    }
+
+    protected void updateCurrentLoopColor() {
+        loops.get(currentLoopIdx).setColor(currentColor);
+    }
+
+    /**
+     * Draw all the loops, with the least recent loop at the bottom f the canvas, and the
+     * currentLoopIdx at the top
+     *
+     * @param canvas
+     */
+    protected void drawAllLoops(Canvas canvas) {
+        // draw the loops after currentLoopIdx first
+        int i = currentLoopIdx + 1;
+        while (i < loops.size()) {
+            loops.get(i).draw(canvas, paint);
+            i++;
+        }
+        // draw the loops before currentLoopIdx
+        i = 0;
+        while (i <= currentLoopIdx) {
+            loops.get(i).draw(canvas, paint);
+            i++;
+        }
+    }
+
+    public int getWidth() {
+        return width;
+    }
 
 
-	public void setHeight(int height) {
-		this.height = height;
-	}
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
 
-	public RenderMode getCurrentRenderMode() {
-		return currentRenderMode;
-	}
+    public int getHeight() {
+        return height;
+    }
 
 
-	public void setCurrentRenderMode(RenderMode currentRenderMode) {
-		this.currentRenderMode = currentRenderMode;
-		if (currentRenderMode == RenderMode.STROKE_ONLY){
-			paint.setStyle(Style.STROKE);
-		}else if (currentRenderMode == RenderMode.SOLID_COLOR){
-			paint.setStyle(Style.FILL);
-		}
-	}
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
 
-	public int getBgColor() {
-		return bgColor;
-	}
+    public RenderMode getCurrentRenderMode() {
+        return currentRenderMode;
+    }
 
 
-	public void setBgColor(int bgColor) {
-		this.bgColor = bgColor;
-	}
+    public void setCurrentRenderMode(RenderMode currentRenderMode) {
+        this.currentRenderMode = currentRenderMode;
+        if (currentRenderMode == RenderMode.STROKE_ONLY) {
+            paint.setStyle(Style.STROKE);
+        } else if (currentRenderMode == RenderMode.SOLID_COLOR) {
+            paint.setStyle(Style.FILL);
+        }
+    }
+
+
+    public int getBgColor() {
+        return bgColor;
+    }
+
+
+    public void setBgColor(int bgColor) {
+        this.bgColor = bgColor;
+    }
 
 }
 
