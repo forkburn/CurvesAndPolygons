@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class MovingLoopsRenderer {
 
-    public static final int DEFAULT_FRAME_INTERVAL = 33;
+    public static final int DEFAULT_FRAME_INTERVAL = 30;
     // series of loops moving on the screen
     protected ArrayList<Loop> loops = new ArrayList<Loop>();
     // a pointer to the current loop which we'll process in next frame
